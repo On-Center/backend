@@ -20,9 +20,14 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@fastify/env": "^5.0.2",
+    "@fastify/helmet": "^13.0.1",
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/platform-fastify": "^11.1.5",
+    "dotenv": "^17.2.0",
+    "fastify": "^5.4.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },

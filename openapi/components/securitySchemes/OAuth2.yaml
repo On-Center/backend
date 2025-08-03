@@ -1,0 +1,12 @@
+type: oauth2
+flows:
+  clientCredentials:
+    tokenUrl: /oauth/token
+    scopes:
+      write:banks: Create and modify banks
+      read:banks: Read bank information
+  implicit:
+    authorizationUrl: /oauth/authorize
+    scopes:
+      write:banks: Create and modify banks
+      read:banks: Read bank information 

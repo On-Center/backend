@@ -1,24 +1,18 @@
 type: object
-properties:
-  id:
-    type: string
-    format: uuid
-    description: The unique identifier for the bank.
-  name:
-    type: string
-    description: The name of the bank.
-  address:
-    type: string
-    description: The physical address of the bank.
-  contactNumber:
-    type: string
-    description: The contact number for the bank.
-  establishedDate:
-    type: string
-    format: date
-    description: The date the bank was established.
 required:
   - name
-  - address
-  - contactNumber
-  - establishedDate
+  - teacherID
+properties:
+  name:
+    type: string
+    description: The name of the bank
+    example: "Mathematics Bank"
+  teacherID:
+    type: integer
+    description: The ID of the teacher who owns this bank
+    example: 12345
+  grade:
+    type: string
+    nullable: true
+    description: The grade level of the bank (optional)
+    example: "10th Grade" 

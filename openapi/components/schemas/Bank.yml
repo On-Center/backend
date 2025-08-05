@@ -1,0 +1,43 @@
+Bank:
+  type: object
+  properties:
+    id:
+      type: string
+      format: uuid
+    teacherId:
+      type: string
+      format: uuid
+    name:
+      type: string
+    grade:
+      type: [string, 'null']
+  required:
+    - id
+    - teacherId
+    - name
+    - grade
+
+CreateBankDto:
+  type: object
+  properties:
+    teacherId:
+      type: string
+      format: uuid
+    name:
+      type: string
+    grade:
+      type: [string, 'null']
+  required:
+    - teacherId
+    - name
+
+UpdateBankDto:
+  type: object
+  properties:
+    teacherId:
+      type: string
+      format: uuid
+    name:
+      type: string
+    grade:
+      type: [string, 'null']

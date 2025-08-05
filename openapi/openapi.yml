@@ -1,0 +1,24 @@
+openapi: 3.0.0
+info:
+  title: On Center API
+  version: 1.0.0
+  description: API for On Center application
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+
+paths:
+  /banks:
+    $ref: './paths/banks.yml#/'
+  /banks/{id}:
+    $ref: './paths/banks.yml#/'
+
+components:
+  schemas:
+    Bank:
+      $ref: './components/schemas/Bank.yml#/Bank'
+    CreateBankDto:
+      $ref: './components/schemas/Bank.yml#/CreateBankDto'
+    UpdateBankDto:
+      $ref: './components/schemas/Bank.yml#/UpdateBankDto'

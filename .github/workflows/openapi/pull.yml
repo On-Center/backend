@@ -22,6 +22,19 @@ jobs:
           npm install -g @apidevtools/swagger-cli
           npm install -g @openapitools/openapi-generator-cli
 
+      - name: Check OpenAPI version
+        run: |
+          # Get the latest OpenAPI version from the official repo
+          LATEST_VERSION=$(curl -s https://api.github.com/repos/OAI/OpenAPI-Specification/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | sed 's/^v//')
+          CURRENT_VERSION=$(grep "^openapi:" ./openapi/openapi.yml | awk '{print $2}')
+          
+          echo "Current OpenAPI version: $CURRENT_VERSION"
+          echo "Latest OpenAPI version: $LATEST_VERSION"
+          
+          if [[ "$CURRENT_VERSION" != "$LATEST_VERSION" ]]; then
+            echo "::warning file=openapi/openapi.yml,title=OpenAPI Version::Your OpenAPI specification is using version $CURRENT_VERSION while version $LATEST_VERSION is available. Consider upgrading to get the latest features and improvements."
+          fi
+
       - name: Bundle OpenAPI files
         run: swagger-cli bundle ./openapi/openapi.yml --outfile ./openapi/_bundled.yml --type yaml
 

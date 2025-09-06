@@ -1,0 +1,43 @@
+name: openapi-pull
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'openapi/**'
+
+jobs:
+  validate: 
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.x'
+
+      - name: Install dependencies
+        run: |
+          npm install -g @apidevtools/swagger-cli
+          npm install -g @openapitools/openapi-generator-cli
+
+      - name: Bundle OpenAPI files
+        run: swagger-cli bundle ./openapi/openapi.yml --outfile ./openapi/_bundled.yml --type yaml
+
+      - name: Validate OpenAPI specification
+        run: swagger-cli validate ./openapi/_bundled.yml
+
+      - name: Lint OpenAPI specification
+        run: |
+          npm install -g @stoplight/spectral-cli
+          spectral lint ./openapi/_bundled.yml
+
+      - name: Check for breaking API changes
+        run: |
+          npm install -g @openapitools/openapi-diff-cli
+          git fetch origin main
+          git show origin/main:openapi/openapi.yml > ./openapi/previous.yml
+          swagger-cli bundle ./openapi/previous.yml --outfile ./openapi/previous_bundled.yml --type yaml
+          openapitools-api-diff --fail-on-incompatible ./openapi/previous_bundled.yml ./openapi/_bundled.yml || exit 1
+          rm ./openapi/previous.yml ./openapi/previous_bundled.yml

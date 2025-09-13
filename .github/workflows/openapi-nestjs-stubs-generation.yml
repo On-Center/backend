@@ -1,0 +1,71 @@
+name: openapi-generate-nestjs-stubs
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'openapi/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate-stubs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Setup Java (required by OpenAPI Generator)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install CLI tools
+        run: |
+          npm install -g @apidevtools/swagger-cli
+          npm install -g @openapitools/openapi-generator-cli
+
+      - name: Bundle OpenAPI files
+        run: swagger-cli bundle ./openapi/openapi.yml --outfile ./openapi/_bundled.yml --type yaml
+
+      - name: Clean stubs folder
+        run: |
+          rm -rf ./stubs
+          mkdir -p ./stubs
+
+      - name: Generate NestJS server stubs
+        run: |
+          openapi-generator-cli generate \
+            -g typescript-nestjs-server \
+            -i ./openapi/_bundled.yml \
+            -o ./stubs \
+            --additional-properties=nestVersion=10.0.0,supportsES6=true,sortParamsByRequiredFlag=true,sortModelPropertiesByRequiredFlag=true
+
+      - name: Commit & push changes (if any)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git commit -m "chore(stubs): regenerate NestJS server stubs from OpenAPI"
+          # Rebase to avoid non-fast-forward push errors if something landed meanwhile
+          git pull --rebase origin main
+          git push origin HEAD:main

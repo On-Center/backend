@@ -20,10 +20,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Node.js (LTS)
+        uses: actions/setup-node@v5
         with:
-          node-version: '22.x'
+          node-version: 'lts/*'
+          check-latest: true
 
       - name: Setup Java (required by OpenAPI Generator)
         uses: actions/setup-java@v4
@@ -46,11 +47,21 @@ jobs:
 
       - name: Generate NestJS server stubs
         run: |
-          openapi-generator-cli generate \
-            -g typescript-nestjs-server \
-            -i ./openapi/_bundled.yml \
-            -o ./stubs \
-            --additional-properties=nestVersion=10.0.0,supportsES6=true,sortParamsByRequiredFlag=true,sortModelPropertiesByRequiredFlag=true
+          openapi-generator generate \
+            -g typescript-nestjs \
+            -i openapi.yaml \
+            -o ./generated \
+            --additional-properties="disallowAdditionalPropertiesIfNotPresent=false,\
+                                      legacyDiscriminatorBehavior=false,\
+                                      stringEnums=true,\
+                                      enumUnknownDefaultCase=true,\
+                                      fileNaming=kebab-case,\
+                                      useSingleRequestParameter=true,\
+                                      supportsES6=true,\
+                                      nullSafeAdditionalProps=true,\
+                                      taggedUnions=true,\
+                                      nestVersion=8.0.0,\
+                                      licenseName=MIT"
 
       - name: Commit & push changes (if any)
         env:

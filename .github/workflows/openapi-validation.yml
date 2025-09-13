@@ -12,10 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Setup Node.js (LTS)
+        uses: actions/setup-node@v5
         with:
-          node-version: '22.x'
+          node-version: 'lts/*'
+          check-latest: true
 
       - name: Install dependencies
         run: |

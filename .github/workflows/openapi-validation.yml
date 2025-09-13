@@ -1,4 +1,4 @@
-name: openapi-pull
+name: openapi-validation
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
       - 'openapi/**'
 
 jobs:
-  validate: 
+  validate-version-linting-and-breaking-changes: 
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

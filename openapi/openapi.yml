@@ -10,9 +10,9 @@ servers:
 
 paths:
   /banks:
-    $ref: './paths/banks.yml#/'
+    $ref: './paths/banks.yml#/collection'
   /banks/{id}:
-    $ref: './paths/banks.yml#/'
+    $ref: './paths/banks.yml#/item'
 
 components:
   schemas:

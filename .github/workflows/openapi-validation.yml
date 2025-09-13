@@ -44,7 +44,7 @@ jobs:
       - name: Lint OpenAPI specification
         run: |
           npm install -g @stoplight/spectral-cli
-          spectral lint -r spectral:oas --fail-severity=warn ./openapi/_bundled.yml
+          spectral lint -r spectral:oas --fail-severity=warn -f github-actions ./openapi/_bundled.yml
 
       - name: Check for breaking API changes
         run: |

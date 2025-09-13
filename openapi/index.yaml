@@ -1,0 +1,21 @@
+openapi: 3.1.0
+info:
+  $ref: './info.yaml'
+servers:
+  - url: https://api.educationplatform.com/v1
+    description: Production server
+  - url: https://staging-api.educationplatform.com/v1
+    description: Staging server
+  - url: http://localhost:3000/v1
+    description: Local development server
+paths:
+  $ref: './paths/banks.yaml'
+components:
+  schemas:
+    Bank:
+      $ref: './components/schemas/Bank.yaml'
+  securitySchemes:
+    OAuth2:
+      $ref: './components/securitySchemes/OAuth2.yaml'
+tags:
+  $ref: './tags.yaml' 

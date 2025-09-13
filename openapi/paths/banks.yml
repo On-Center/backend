@@ -1,40 +1,39 @@
-get:
-  summary: Get all banks
-  operationId: getBanks
-  tags:
-    - Banks
-  responses:
-    '200':
-      description: List of banks
+collection:
+  get:
+    summary: Get all banks
+    description: Retrieve a paginated list of all banks visible to the caller.
+    operationId: getBanks
+    tags: [Banks]
+    responses:
+      '200':
+        description: List of banks
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '../components/schemas/Bank.yml#/Bank'
+
+  post:
+    summary: Create a new bank
+    description: Create a bank with the provided attributes.
+    operationId: createBank
+    tags: [Banks]
+    requestBody:
+      required: true
       content:
         application/json:
           schema:
-            type: array
-            items:
+            $ref: '../components/schemas/Bank.yml#/CreateBankDto'
+    responses:
+      '201':
+        description: Bank created successfully
+        content:
+          application/json:
+            schema:
               $ref: '../components/schemas/Bank.yml#/Bank'
 
-post:
-  summary: Create a new bank
-  operationId: createBank
-  tags:
-    - Banks
-  requestBody:
-    required: true
-    content:
-      application/json:
-        schema:
-          $ref: '../components/schemas/Bank.yml#/CreateBankDto'
-  responses:
-    '201':
-      description: Bank created successfully
-      content:
-        application/json:
-          schema:
-            $ref: '../components/schemas/Bank.yml#/Bank'
-
-get:
-  summary: Get a bank by ID
-  operationId: getBankById
+item:
   parameters:
     - name: id
       in: path
@@ -42,54 +41,50 @@ get:
       schema:
         type: string
         format: uuid
-  responses:
-    '200':
-      description: Bank found
+
+  get:
+    summary: Get a bank by ID
+    description: Retrieve a single bank by its unique identifier.
+    operationId: getBankById
+    tags: [Banks]
+    responses:
+      '200':
+        description: Bank found
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/Bank.yml#/Bank'
+      '404':
+        description: Bank not found
+
+  patch:
+    summary: Update a bank
+    description: Partially update attributes of a bank.
+    operationId: updateBank
+    tags: [Banks]
+    requestBody:
+      required: true
       content:
         application/json:
           schema:
-            $ref: '../components/schemas/Bank.yml#/Bank'
-    '404':
-      description: Bank not found
+            $ref: '../components/schemas/Bank.yml#/UpdateBankDto'
+    responses:
+      '200':
+        description: Bank updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/Bank.yml#/Bank'
+      '404':
+        description: Bank not found
 
-patch:
-  summary: Update a bank
-  operationId: updateBank
-  parameters:
-    - name: id
-      in: path
-      required: true
-      schema:
-        type: string
-        format: uuid
-  requestBody:
-    required: true
-    content:
-      application/json:
-        schema:
-          $ref: '../components/schemas/Bank.yml#/UpdateBankDto'
-  responses:
-    '200':
-      description: Bank updated successfully
-      content:
-        application/json:
-          schema:
-            $ref: '../components/schemas/Bank.yml#/Bank'
-    '404':
-      description: Bank not found
-
-delete:
-  summary: Delete a bank
-  operationId: deleteBank
-  parameters:
-    - name: id
-      in: path
-      required: true
-      schema:
-        type: string
-        format: uuid
-  responses:
-    '204':
-      description: Bank deleted successfully
-    '404':
-      description: Bank not found
+  delete:
+    summary: Delete a bank
+    description: Permanently delete a bank.
+    operationId: deleteBank
+    tags: [Banks]
+    responses:
+      '204':
+        description: Bank deleted successfully
+      '404':
+        description: Bank not found

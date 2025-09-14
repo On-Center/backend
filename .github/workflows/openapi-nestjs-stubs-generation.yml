@@ -47,6 +47,27 @@ jobs:
       - name: Bundle OpenAPI files
         run: swagger-cli bundle ./openapi/openapi.yml --outfile ./openapi/_bundled.yml --type yaml
 
+      # --- Optional: inject mock server URL into the bundled spec so Redoc "Try it" uses it ---
+      - name: Inject mock server URL into bundled spec (optional)
+        if: ${{ env.FLY_APP_NAME != '' }}
+        env:
+          FLY_APP_NAME: ${{ vars.FLY_APP_NAME }}
+        run: |
+          python -m pip install --user pyyaml
+          python - <<'PY'
+          import os, yaml
+          path = './openapi/_bundled.yml'
+          with open(path) as f:
+              doc = yaml.safe_load(f)
+          servers = doc.get('servers', []) or []
+          url = f"https://{os.environ['FLY_APP_NAME']}.fly.dev"
+          if not any(s.get('url') == url for s in servers):
+              servers.append({'url': url, 'description': 'Public mock (Prism on Fly.io)'})
+          doc['servers'] = servers
+          with open(path, 'w') as f:
+              yaml.safe_dump(doc, f, sort_keys=False)
+          PY
+
       - name: Clean stubs folder
         run: |
           rm -rf ./stubs
@@ -77,6 +98,13 @@ jobs:
           redocly build-docs ./openapi/_bundled.yml --output ./public/index.html
           # optional: let users download the spec
           cp ./openapi/_bundled.yml ./public/openapi.yaml
+
+      # Keep a copy of the bundle as an artifact for the mock deploy job
+      - name: Upload OpenAPI bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi-bundle
+          path: ./openapi/_bundled.yml
 
       - name: Remove bundled OpenAPI file (temporary)
         run: rm -f ./openapi/_bundled.yml
@@ -113,3 +141,56 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  # --- New: Deploy a public mock server (Prism) to Fly.io ---
+  deploy-mock:
+    needs: generate-stubs
+    runs-on: ubuntu-latest
+    env:
+      FLY_APP_NAME: ${{ vars.FLY_APP_NAME }}
+      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download bundled OpenAPI
+        uses: actions/download-artifact@v4
+        with:
+          name: openapi-bundle
+          path: mock
+
+      - name: Prepare mock build context
+        run: |
+          ls -la mock
+          mv mock/_bundled.yml mock/openapi.yml
+
+      - name: Setup Flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@v1
+
+      - name: Create fly.toml
+        run: |
+          cat > mock/fly.toml <<EOF
+          app = "${FLY_APP_NAME}"
+          primary_region = "ams"
+
+          [http_service]
+            internal_port = 8080
+            force_https = true
+            auto_stop_machines = "suspend"
+            auto_start_machines = true
+            min_machines_running = 1
+          EOF
+
+      - name: Ensure app exists
+        run: |
+          flyctl apps create "${FLY_APP_NAME}" || echo "App may already exist."
+
+      - name: Deploy Prism mock
+        working-directory: mock
+        run: |
+          flyctl deploy --remote-only --app "${FLY_APP_NAME}" --dockerfile ./Dockerfile
+
+      - name: Mock URL
+        run: echo "Mock is live at https://${FLY_APP_NAME}.fly.dev"

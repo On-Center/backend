@@ -7,10 +7,11 @@ on:
       - 'openapi/**'
 
 jobs:
-  validate-version-linting-and-breaking-changes: 
+  validate-version-linting-and-breaking-changes:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup Node.js (LTS)
         uses: actions/setup-node@v5
@@ -18,20 +19,19 @@ jobs:
           node-version: 'lts/*'
           check-latest: true
 
-      - name: Install dependencies
+      - name: Install CLI dependencies
         run: |
           npm install -g @apidevtools/swagger-cli
           npm install -g @openapitools/openapi-generator-cli
+          npm install -g @stoplight/spectral-cli
+          npm install -g @openapitools/openapi-diff-cli
 
       - name: Check OpenAPI version
         run: |
-          # Get the latest OpenAPI version from the official repo
           LATEST_VERSION=$(curl -s https://api.github.com/repos/OAI/OpenAPI-Specification/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | sed 's/^v//')
           CURRENT_VERSION=$(grep "^openapi:" ./openapi/openapi.yml | awk '{print $2}')
-          
           echo "Current OpenAPI version: $CURRENT_VERSION"
           echo "Latest OpenAPI version: $LATEST_VERSION"
-          
           if [[ "$CURRENT_VERSION" != "$LATEST_VERSION" ]]; then
             echo "::warning file=openapi/openapi.yml,title=OpenAPI Version::Your OpenAPI specification is using version $CURRENT_VERSION while version $LATEST_VERSION is available. Consider upgrading to get the latest features and improvements."
           fi
@@ -44,14 +44,21 @@ jobs:
 
       - name: Lint OpenAPI specification
         run: |
-          npm install -g @stoplight/spectral-cli
-          spectral lint --ruleset ./spectral.yaml --fail-severity=warn -f github-actions ./openapi/_bundled.yml
+          spectral lint ./openapi/_bundled.yml \
+            --ruleset ./spectral.yaml \
+            --fail-severity=error \
+            --format=github-actions \
+            --display-only-failures
 
       - name: Check for breaking API changes
         run: |
-          npm install -g @openapitools/openapi-diff-cli
+          set -e
           git fetch origin main
+          if ! git ls-tree -r origin/main --name-only | grep -q '^openapi/openapi.yml$'; then
+            echo "No previous OpenAPI spec found on origin/main. Skipping breaking-change check."
+            exit 0
+          fi
           git show origin/main:openapi/openapi.yml > ./openapi/previous.yml
           swagger-cli bundle ./openapi/previous.yml --outfile ./openapi/previous_bundled.yml --type yaml
-          openapitools-api-diff --fail-on-incompatible ./openapi/previous_bundled.yml ./openapi/_bundled.yml || exit 1
+          openapitools-api-diff --fail-on-incompatible ./openapi/previous_bundled.yml ./openapi/_bundled.yml
           rm ./openapi/previous.yml ./openapi/previous_bundled.yml

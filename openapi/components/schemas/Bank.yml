@@ -10,7 +10,8 @@ Bank:
     name:
       type: string
     grade:
-      type: [string, 'null']
+      type: string
+      nullable: true
   required:
     - id
     - teacherId
@@ -26,7 +27,8 @@ CreateBankDto:
     name:
       type: string
     grade:
-      type: [string, 'null']
+      type: string
+      nullable: true
   required:
     - teacherId
     - name
@@ -40,4 +42,5 @@ UpdateBankDto:
     name:
       type: string
     grade:
-      type: [string, 'null']
+      type: string
+      nullable: true

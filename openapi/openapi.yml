@@ -2,17 +2,24 @@ openapi: 3.0.0
 info:
   title: On Center API
   version: 1.0.0
-  description: API for On Center application
+  description: API for the On Center application
+  contact:
+    name: API Support
+    email: support@oncenter.local
 
 servers:
   - url: http://localhost:3000
     description: Development server
 
+tags:
+  - name: Banks
+    description: Endpoints for managing banks
+
 paths:
   /banks:
-    $ref: './paths/banks.yml#/'
+    $ref: './paths/banks.yml#/collection'
   /banks/{id}:
-    $ref: './paths/banks.yml#/'
+    $ref: './paths/banks.yml#/item'
 
 components:
   schemas:

@@ -1,4 +1,4 @@
-name: openapi-generate-nestjs-stubs
+name: "OpenAPI: Generate NestJS stubs, docs & mock"
 
 on:
   push:

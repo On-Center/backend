@@ -1,0 +1,19 @@
+openapi: 3.1.0
+info:
+  title: TestBank API
+  version: 1.0.0
+  description: API for managing bank resources
+  contact:
+    name: API Support
+    url: https://example.com/support
+    email: support@example.com
+paths:
+  /banks:
+    $ref: './paths/banks.yaml'
+components:
+  schemas:
+    Bank:
+      $ref: './components/schemas/Bank.yaml'
+  securitySchemes:
+    BearerAuth:
+      $ref: './components/securitySchemes/BearerAuth.yaml'

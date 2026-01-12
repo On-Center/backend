@@ -1,0 +1,7 @@
+type: http
+scheme: bearer
+bearerFormat: JWT
+description: |
+  This security scheme uses Bearer authentication with a JSON Web Token (JWT). 
+  Clients must include the token in the Authorization header as follows:
+  `Authorization: Bearer <token>`

@@ -1,0 +1,10 @@
+title: TestBank API
+version: 1.0.0
+description: API for managing bank resources in the TestBank system.
+contact:
+  name: API Support
+  email: support@testbank.com
+  url: https://www.testbank.com/support
+license:
+  name: MIT
+  url: https://opensource.org/licenses/MIT

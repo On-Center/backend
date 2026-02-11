@@ -1,0 +1,18 @@
+type: object
+required:
+  - name
+  - teacherID
+properties:
+  name:
+    type: string
+    description: The name of the bank
+    example: "Mathematics Bank"
+  teacherID:
+    type: integer
+    description: The ID of the teacher who owns this bank
+    example: 12345
+  grade:
+    type: string
+    nullable: true
+    description: The grade level of the bank (optional)
+    example: "10th Grade" 

@@ -1,0 +1,27 @@
+title: Education Platform API
+version: 1.0.0
+description: |
+  A comprehensive API for managing educational content, banks, and resources
+  in a large-scale education platform.
+  
+  This API provides endpoints for:
+  - Managing question banks
+  - Teacher and student interactions
+  - Educational content management
+  
+  ## Authentication
+  This API uses OAuth 2.0 for authentication. Please refer to the security schemes
+  for more information about available flows and scopes.
+  
+  ## Rate Limiting
+  API requests are limited to 1000 requests per hour per client.
+  
+  ## Support
+  For support and questions, please contact our API team.
+contact:
+  name: API Support Team
+  email: api-support@educationplatform.com
+  url: https://educationplatform.com/support
+license:
+  name: MIT
+  url: https://opensource.org/licenses/MIT 

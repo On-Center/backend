@@ -1,0 +1,28 @@
+- name: Banks
+  description: |
+    Operations for managing question banks in the education platform.
+    
+    Banks are collections of questions that teachers can create and organize
+    for their students. Each bank belongs to a specific teacher and can
+    contain various types of educational content.
+  
+- name: Authentication
+  description: |
+    OAuth 2.0 authentication and authorization operations.
+    
+    These endpoints handle token generation, validation, and user
+    authentication flows.
+  
+- name: Teachers
+  description: |
+    Teacher management operations.
+    
+    Endpoints for creating, updating, and managing teacher accounts
+    and their associated data.
+  
+- name: Students
+  description: |
+    Student management operations.
+    
+    Endpoints for managing student accounts, enrollments, and
+    educational progress tracking. 
